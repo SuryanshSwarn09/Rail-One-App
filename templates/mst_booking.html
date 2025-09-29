@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Book MST{% endblock %}
+{% block content %}
+    <style>
+        /* --- NEW: Styles for a two-column form layout --- */
+        .mst-form .form-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .mst-form .form-row label {
+            flex-basis: 30%; /* Width of the label column */
+            text-align: left;
+            font-weight: bold;
+        }
+        .mst-form .form-row .input-container {
+            flex-basis: 70%; /* Width of the input column */
+        }
+    </style>
+
+    <h2>Book Monthly Season Ticket (MST)</h2>
+    <p>Get a pass for one month of travel between two stations.</p>
+    <hr>
+
+    <form method="post" autocomplete="off" class="mst-form">
+        <div class="form-row">
+            <label for="source_station">From Station:</label>
+            <div class="input-container autocomplete">
+                <input type="text" id="source_station" name="source_station" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <label for="dest_station">To Station:</label>
+            <div class="input-container autocomplete">
+                <input type="text" id="dest_station" name="dest_station" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <label for="passenger_name">Passenger Name:</label>
+            <div class="input-container">
+                <input type="text" id="passenger_name" name="passenger_name" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <label for="passenger_age">Age:</label>
+            <div class="input-container">
+                <input type="number" id="passenger_age" name="passenger_age" min="1" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <label for="phone_number">Phone Number:</label>
+            <div class="input-container">
+                <input type="tel" id="phone_number" name="phone_number" required>
+            </div>
+        </div>
+        
+        <button type="submit">Proceed to Payment</button>
+    </form>
+    
+    <script>
+        var stationList = {{ stations|tojson }};
+        autocomplete(document.getElementById("source_station"), stationList);
+        autocomplete(document.getElementById("dest_station"), stationList);
+    </script>
+{% endblock %}

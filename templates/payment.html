@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Complete Payment{% endblock %}
+
+{% block content %}
+    <style>
+        .payment-box {
+            max-width: 500px;
+            margin: 40px auto;
+            padding: 30px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .amount {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+            margin: 20px 0;
+        }
+        .pay-button {
+            background-color: #28a745;
+            font-size: 1.2em;
+            padding: 15px 30px;
+        }
+        .pay-button:hover {
+            background-color: #218838;
+        }
+    </style>
+
+    <div class="payment-box">
+        <h2>Confirm Your Booking</h2>
+        <p>You are about to make the following payment:</p>
+        <div class="amount">₹ {{ "%.2f"|format(amount) }}</div>
+        
+        <form method="post">
+            <button type="submit" class="pay-button">Pay Now</button>
+        </form>
+        <p style="margin-top: 20px; color: #777;"><small>This is a simulated payment page.</small></p>
+    </div>
+{% endblock %}

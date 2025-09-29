@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Platform Ticket{% endblock %}
+
+{% block content %}
+    <div class="ticket-details">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="https://upload.wikimedia.org/wikipedia/en/4/45/IRCTC_Logo.svg" alt="Railway Logo" style="width: 80px;">
+            <h2 style="margin-top: 10px; margin-bottom: 0;">भारतीय रेलवे</h2>
+        </div>
+        <h3>Platform Ticket Details</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <p><strong>Ticket ID:</strong> {{ ticket.ticket_id }}</p>
+                <p><strong>Status:</strong> <span style="font-weight: bold; color: green">{{ ticket.status }}</span></p>
+            </div>
+            <div>
+                <img src="{{ url_for('generate_qr_code', ticket_type='platform', ticket_id=ticket.ticket_id) }}" alt="Ticket QR Code" style="width: 100px; height: 100px;">
+            </div>
+        </div>
+        <hr>
+        <p><strong>Station Name:</strong> {{ ticket.station_name }}</p>
+        <p><strong>Number of Persons:</strong> {{ ticket.num_persons }}</p>
+        <p><strong>Total Price:</strong> ₹{{ ticket.total_price }}</p>
+        <hr>
+        <p><em>Booked on: {{ ticket.booking_date }}</em></p>
+        <p><em><strong>Note:</strong> This ticket is valid for 2 hours from the time of booking.</em></p>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="{{ url_for('print_platform_ticket', ticket_id=ticket.ticket_id) }}" class="button" target="_blank">
+                Print / Save as PDF
+            </a>
+        </div>
+    </div>
+{% endblock %}

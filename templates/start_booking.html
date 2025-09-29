@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Book Ticket{% endblock %}
+
+{% block content %}
+    <h2>Book a Ticket</h2>
+    <p>You are booking a ticket for the following train:</p>
+    
+    <div style="background-color: #f0f0f0; padding: 15px; border-radius: 5px;">
+        <p><strong>Train Name:</strong> {{ train[0] }}</p>
+        <p><strong>Train Number:</strong> {{ train_no }}</p>
+        <p><strong>Route:</strong> {{ train[1] }} to {{ train[2] }}</p>
+        <p><strong>Seats Available:</strong> {{ train[5] }}</p>
+    </div>
+
+    <hr style="margin: 20px 0;">
+
+    <form method="post">
+        <label for="num_passengers"><strong>Number of Passengers:</strong></label>
+        <input type="number" id="num_passengers" name="num_passengers" min="1" max="{{ train[5] }}" required>
+        
+        <button type="submit">Proceed to Enter Details</button>
+    </form>
+{% endblock %}

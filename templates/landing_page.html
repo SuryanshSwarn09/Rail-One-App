@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Journey Planner{% endblock %}
+
+{% block content %}
+    <style>
+        .welcome-header {
+            text-align: left;
+            margin-bottom: 40px;
+        }
+        .welcome-header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .welcome-header p {
+            font-size: 1.2em;
+            color: #555;
+        }
+        .journey-planner {
+            display: flex;
+            justify-content: center;
+            gap: 30px; 
+            flex-wrap: wrap; 
+            margin-top: 50px;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            padding: 25px 20px;
+            width: 280px; 
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            text-decoration: none; 
+            color: inherit; 
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        .card img {
+            width: 100%; 
+            max-width: 200px; 
+            height: auto;
+            border-radius: 10px; 
+            margin-bottom: 20px;
+            object-fit: cover; 
+        }
+        .card h3 {
+            font-size: 1.8em;
+            color: #007BFF; 
+            margin: 0;
+            padding-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .journey-planner {
+                flex-direction: column;
+                align-items: center;
+            }
+            .card {
+                width: 90%;
+                max-width: 350px;
+            }
+        }
+
+    </style>
+
+    <div class="welcome-header">
+        <p>Hi, {{ username.title() }}!</p>
+        <h2>भारतीय रेलवे, राष्ट्र की जीवन रेखा</h2>
+    </div>
+
+    <div class="journey-planner">
+        <a href="{{ url_for('reserved_booking') }}" class="card">
+            <img src="https://upload.wikimedia.org/wikipedia/en/8/83/Indian_Railways.svg" alt="Reserved Seats">
+            <h3>Reserved</h3>
+        </a>
+        <a href="{{ url_for('unreserved_ticket_search') }}" class="card">
+            <img src="https://m.media-amazon.com/images/I/712E12DKsXL.png" alt="Unreserved Coach">
+            <h3>Unreserved</h3>
+        </a>
+        <a href="{{ url_for('platform_ticket_booking') }}" class="card">
+            <img src="https://cdn1.iconfinder.com/data/icons/location-pointer-1/64/Railway_Station-512.png" alt="Platform Info">
+            <h3>Platform</h3>
+        </a>
+        <a href="{{ url_for('mst_booking') }}" class="card">
+            <img src="https://cdn-icons-png.flaticon.com/512/9808/9808637.png" alt="Monthly Season Ticket">
+            <h3>MST</h3>
+        </a>
+    </div>
+{% endblock %}

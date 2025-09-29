@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Confirm Unreserved Booking{% endblock %}
+{% block content %}
+    <h2>Confirm Unreserved Booking</h2>
+    <div style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+        <p><strong>Route:</strong> {{ source }} to {{ destination }}</p>
+        <p><strong>Calculated Distance:</strong> {{ distance }} km</p>
+    </div>
+    
+    <form method="post">
+        <label for="train_type"><strong>Select Train Type:</strong></label>
+        <div>
+            <input type="radio" id="mail" name="train_type" value="MAIL" required>
+            <label for="mail">Mail/Express </label>
+        </div>
+        <div>
+            <input type="radio" id="ord" name="train_type" value="ORDINARY">
+            <label for="ord">Ordinary </label>
+        </div>
+        <div>
+            <input type="radio" id="sf" name="train_type" value="SUPERFAST">
+            <label for="sf">Superfast </label>
+        </div>
+
+        <label for="num_adults"><strong>Number of Adults:</strong></label>
+        <input type="number" id="num_adults" name="num_adults" min="0" value="1" required>
+
+        <label for="num_children"><strong>Number of Children:</strong></label>
+        <input type="number" id="num_children" name="num_children" min="0" value="0" required>
+        
+        <button type="submit">Book Ticket</button>
+    </form>
+{% endblock %}

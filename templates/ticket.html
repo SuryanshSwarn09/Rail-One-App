@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Your Ticket{% endblock %}
+
+{% block content %}
+    <style>
+
+        .ticket-details {
+            max-width: 850px; 
+            margin: 0 auto;  
+        }
+    </style>
+
+    <h2>Indian Railway E-Ticket</h2>
+    <div class="ticket-details">
+
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="https://upload.wikimedia.org/wikipedia/en/4/45/IRCTC_Logo.svg" alt="Railway Logo" style="width: 80px;">
+            <h2 style="margin-top: 10px; margin-bottom: 0;">भारतीय रेलवे</h2>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <p><strong>PNR:</strong> {{ ticket.pnr }}</p>
+                <p>
+                    <strong>Status:</strong> 
+                    <span style="font-weight: bold; color: {{ 'green' if ticket.status == 'CONFIRMED' else 'red' }}">
+                        {{ ticket.status }}
+                    </span>
+                </p>
+            </div>
+            <div>
+                <img src="{{ url_for('generate_qr_code', ticket_type='reserved', ticket_id=ticket.pnr) }}" alt="Ticket QR Code" style="width: 100px; height: 100px;">
+            </div>
+        </div>
+        <hr>
+        <p><strong>Train No:</strong> {{ ticket.train_no }}</p>
+        <p><strong>Train Name:</strong> {{ ticket.train_name }}</p>
+        <p><strong>From:</strong> {{ ticket.source }}</p>
+        <p><strong>To:</strong> {{ ticket.destination }}</p>
+        <p><strong>Departure:</strong> {{ ticket.departure }} | <strong>Arrival:</strong> {{ ticket.arrival }}</p>
+        <p><strong>Class:</strong> {{ ticket.travel_class }}</p>
+        <hr>
+        <h3>Passenger Details</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>S.No</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Coach</th>
+                    <th>Berth</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for passenger in ticket.passengers %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ passenger.name }}</td>
+                    <td>{{ passenger.age }}</td>
+                    <td>{{ passenger.gender }}</td>
+                    <td><strong>{{ passenger.coach }}</strong></td>
+                    <td><strong>{{ passenger.berth }}</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <hr>
+        <p><em>Booked on: {{ ticket.booking_date }}</em></p>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="{{ url_for('print_ticket_page', pnr=ticket.pnr) }}" class="button" target="_blank">Print / Save Ticket as PDF</a>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Train Schedule & Results{% endblock %}
+{% block content %}
+    {% if search_query %} <h2>Search Results for: <strong>{{ search_query[0] }} to {{ search_query[1] }}</strong></h2> {% endif %}
+    <hr>
+    {% if trains %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Train No.</th>
+                    <th>Train Name</th>
+                    <th>Route</th>
+                    <th>Available Classes</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for no, train_data in trains.items() %}
+                <tr>
+                    <td>{{ no }}</td>
+                    <td>{{ train_data.details[0] }}</td>
+                    <td>{{ train_data.details[1] }} to {{ train_data.details[2] }}</td>
+                    <td>
+                        {% for code, class_info in train_data.classes.items() %}
+                            <span style="display:inline-block; background-color:#e0e0e0; border-radius:4px; padding:2px 6px; margin:2px;">
+                                {{ code }} ({{ class_info.seats }})
+                            </span>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('enter_passenger_details', train_no=no) }}" class="button">Book</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No trains were found for the specified route.</p>
+    {% endif %}
+{% endblock %}

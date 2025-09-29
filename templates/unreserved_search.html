@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Book Unreserved Ticket{% endblock %}
+{% block content %}
+    <h2>Book Unreserved Ticket (UTS)</h2>
+    <p>Enter your source and destination to proceed.</p>
+    
+    <div style="background-color: #fffbe6; border: 1px solid #ffeeba; padding: 15px; border-radius: 5px; margin: 20px 0;">
+        <p><strong>Note:</strong> This is a simulation. You can enter either the station's full name or its code from the list below.</p>
+
+    </div>
+
+    <form method="post">
+        <label for="source_station"><strong>From Station:</strong></label>
+        <input type="text" id="source_station" name="source_station" placeholder="e.g., Patna Junction or PNBE" required>
+
+        <label for="dest_station"><strong>To Station:</strong></label>
+        <input type="text" id="dest_station" name="dest_station" placeholder="e.g., New Delhi or NDLS" required>
+        
+        <button type="submit">Add Details</button>
+    </form>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Passenger Details{% endblock %}
+
+{% block content %}
+    <h2>Enter Passenger & Class Details</h2>
+    <p><strong>Train:</strong> {{ train.details[0] }} ({{ train_no }})</p>
+    <p><strong>Route:</strong> {{ train.details[1] }} to {{ train.details[2] }}</p>
+    <hr>
+
+    <form method="post">
+        {# --- CLASS SELECTION --- #}
+        <h3>1. Select Travel Class</h3>
+        <div style="margin-bottom: 20px;">
+            {% for code, class_info in train.classes.items() %}
+                <div>
+                    <input type="radio" id="class_{{ code }}" name="travel_class" value="{{ code }}" {% if loop.first %}checked{% endif %} required>
+                    <label for="class_{{ code }}">
+                        <strong>{{ class_info.name }} ({{ code }})</strong> - Seats Available: {{ class_info.seats }}
+                    </label>
+                </div>
+            {% endfor %}
+        </div>
+        
+        {# --- PASSENGER DETAILS --- #}
+        <h3>2. Add Passenger Details</h3>
+        <label for="num_passengers">Number of Passengers:</label>
+        <input type="number" id="num_passengers" value="1" min="1" onchange="generatePassengerForms()">
+        
+        <div id="passenger-forms-container">
+            </div>
+
+        <button type="submit" style="margin-top:20px;">Confirm Booking</button>
+    </form>
+
+    <script>
+        function generatePassengerForms() {
+            const numPassengers = document.getElementById('num_passengers').value;
+            const container = document.getElementById('passenger-forms-container');
+            container.innerHTML = ''; // Clear existing forms
+
+            for (let i = 0; i < numPassengers; i++) {
+                const formHtml = `
+                    <fieldset style="border: 1px solid #ccc; padding: 15px; border-radius: 5px; margin-top: 15px;">
+                        <legend>Passenger ${i + 1}</legend>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div>
+                                <label for="name_${i}">Name:</label>
+                                <input type="text" id="name_${i}" name="name_${i}" required>
+                            </div>
+                            <div>
+                                <label for="age_${i}">Age:</label>
+                                <input type="number" id="age_${i}" name="age_${i}" min="1" required>
+                            </div>
+                            <div>
+                                <label for="gender_${i}">Gender:</label>
+                                <select id="gender_${i}" name="gender_${i}" required>
+                                    <option value="">-- Select --</option>
+                                    <option value="M">Male</option>
+                                    <option value="F">Female</option>
+                                    <option value="O">Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="preference_${i}">Berth Preference:</label>
+                                <select id="preference_${i}" name="preference_${i}" required>
+                                    <option value="ANY">No Preference</option>
+                                    <option value="LB">Lower</option>
+                                    <option value="MB">Middle</option>
+                                    <option value="UB">Upper</option>
+                                    <option value="SLB">Side Lower</option>
+                                    <option value="SUB">Side Upper</option>
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+                `;
+                container.insertAdjacentHTML('beforeend', formHtml);
+            }
+        }
+        document.addEventListener('DOMContentLoaded', generatePassengerForms);
+    </script>
+{% endblock %}

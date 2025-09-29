@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Print MST</title>
+    <style>
+        body { font-family: 'Courier New', monospace; text-align: center; }
+        .controls { padding: 20px; border-bottom: 1px solid #ccc; }
+        .ticket-container { border: 2px dashed #333; padding: 20px; margin: 20px auto; width: 400px; text-align: left; }
+        @media print { .controls { display: none !important; } }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <button onclick="window.print()" style="padding: 10px 20px;">🖨️ Print Now</button>
+    </div>
+    <div class="ticket-container">
+        <div style="text-align: center; margin-bottom: 15px;">
+            <img src="https://upload.wikimedia.org/wikipedia/en/4/45/IRCTC_Logo.svg" alt="Railway Logo" style="width: 60px;">
+            <h3 style="margin: 5px 0 10px 0;">भारतीय रेलवे</h3>
+        </div>
+        <h2>MONTHLY SEASON TICKET</h2>
+        <p>------------------------------------------</p>
+        <p><strong>PASSENGER:</strong> {{ ticket.passenger_name.upper() }}</p>
+        <p><strong>AGE:</strong> {{ ticket.passenger_age }} | <strong>PHONE:</strong> {{ ticket.phone_number }}</p>
+        <p><strong>FROM:</strong> {{ ticket.source.upper() }}</p>
+        <p><strong>TO:</strong> {{ ticket.destination.upper() }}</p>
+        <p><strong>VALID FROM:</strong> {{ ticket.valid_from }}</p>
+        <p><strong>VALID UNTIL:</strong> {{ ticket.valid_until }}</p>
+        <p><strong>FARE:</strong> Rs. {{ "%.2f"|format(ticket.total_fare) }}</p>
+        <p>------------------------------------------</p>
+        <div style="text-align:center; margin-top:15px;">
+             <img src="{{ url_for('generate_qr_code', ticket_type='mst', ticket_id=ticket.ticket_id) }}" alt="Ticket QR Code" style="width: 120px; height: 120px;">
+        </div>
+    </div>
+</body>
+</html>

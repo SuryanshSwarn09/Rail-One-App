@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Cancel Ticket{% endblock %}
+
+{% block content %}
+    <h2>Cancel Your Ticket</h2>
+    <form action="{{ url_for('cancel') }}" method="post">
+        <label for="pnr">Enter PNR Number:</label>
+        <input type="text" id="pnr" name="pnr" required>
+        <button type="submit">Cancel Ticket</button>
+    </form>
+{% endblock %}

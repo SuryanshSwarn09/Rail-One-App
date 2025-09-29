@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Book a Ticket{% endblock %}
+
+{% block content %}
+    <h2>Book a New Ticket</h2>
+    <form action="{{ url_for('book') }}" method="post">
+        <label for="train_no">Select Train:</label>
+        <select name="train_no" id="train_no" required>
+            <option value="">-- Please select a train --</option>
+            {% for no, details in trains.items() %}
+                <option value="{{ no }}">{{ no }} - {{ details[0] }} ({{ details[1] }} to {{ details[2] }})</option>
+            {% endfor %}
+        </select>
+
+        <label for="num_passengers">Number of Passengers:</label>
+        <input type="number" id="num_passengers" name="num_passengers" min="1" required>
+
+        <button type="submit">Proceed to Passenger Details</button>
+    </form>
+{% endblock %}

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Rail One{% endblock %}</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background-color: #f4f4f4ed; 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .navbar { 
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: flex-end;
+            border-bottom: 1px solid #ddd;
+        }
+        .navbar a { 
+            display: block; 
+            color: #333;
+            text-align: center; 
+            padding: 14px 20px; 
+            text-decoration: none; 
+        }
+        .navbar a:hover { background-color: #ddd; color: black; }
+        .container { 
+            padding: 20px; 
+            max-width: 1200px; 
+            margin: auto;
+            flex-grow: 1; /* Allows content to push footer down */
+        }
+        .content { background-color: white; padding: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .flash { padding: 15px; margin-bottom: 20px; border-radius: 4px; }
+        .flash.success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .flash.error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .flash.info { background-color: #cce5ff; color: #004085; border: 1px solid #b8daff; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #04AA6D; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        form { display: flex; flex-direction: column; gap: 15px; }
+        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 10px 20px; background-color: #04AA6D; color: white; border: none; cursor: pointer; border-radius: 4px; }
+        button:hover { background-color: #038f5a; }
+        .button { padding: 8px 15px; background-color: #007BFF; color: white; text-decoration: none; border-radius: 4px; text-align: center; }
+        .button:hover { background-color: #0056b3; }
+        .top-left-logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+        }
+        .rail-madad-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: #dc3545;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        .rail-madad-button:hover {
+            background-color: #c82333;
+        }
+
+        .footer {
+            background-color: #0c3b74;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: auto; /* Pushes footer to the bottom */
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+        .footer .project-note {
+            font-size: 0.8em;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <a href="{{ url_for('landing_page') }}">
+        <img src="https://upload.wikimedia.org/wikipedia/en/4/45/IRCTC_Logo.svg" alt="Railway Logo" class="top-left-logo">
+    </a>
+
+    {% if session.username %}
+    <nav class="navbar">
+        <a href="{{ url_for('reserved_booking') }}">Reserved TKT</a>
+        <a href="{{ url_for('show_trains') }}">Train Schedule</a>
+        <a href="{{ url_for('cancel') }}">Cancel Ticket</a>
+        <a href="{{ url_for('check_pnr') }}">Check PNR</a>
+        <a href="{{ url_for('my_bookings') }}">My Bookings</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </nav>
+    {% endif %}
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <div class="content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <a href="mailto:irctc@gmail.com" class="rail-madad-button">Rail Madad</a>
+
+    <footer class="footer">
+        <p><strong>भारतीय रेलवे, राष्ट्र की जीवन रेखा Call @139</strong></p>
+        <p class="project-note">Made for College Project</p>
+    </footer>
+
+</body>
+</html>

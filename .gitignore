@@ -1,0 +1,5 @@
+# Ignore the SQLite database
+railway.db
+
+# Ignore Python's cache folder
+__pycache__/

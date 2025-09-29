@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}My Bookings{% endblock %}
+
+{% block content %}
+    <h2>My Bookings</h2>
+    <hr style="margin: 20px 0;">
+
+    {# --- Section 1: Reserved Tickets --- #}
+    {% if reserved_tickets %}
+        <h3>Reserved Tickets</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>PNR Number</th>
+                    <th>Train Name</th>
+                    <th>Route</th>
+                    <th>Class</th>
+                    <th>Booking Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pnr, ticket in reserved_tickets.items()|sort(attribute='1.booking_date', reverse=true) %}
+                <tr>
+                    <td>{{ ticket.pnr }}</td>
+                    <td>{{ ticket.train_name }}</td>
+                    <td>{{ ticket.source }} to {{ ticket.destination }}</td>
+                    <td>{{ ticket.travel_class }}</td>
+                    <td>{{ ticket.booking_date }}</td>
+                    <td>
+                        <span style="font-weight: bold; color: {{ 'green' if ticket.status == 'CONFIRMED' else 'red' }}">
+                            {{ ticket.status }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if ticket.status == 'CANCELLED' %}
+                            <a href="{{ url_for('print_ticket_page', pnr=ticket.pnr) }}" class="button" style="background-color: #6c757d;" target="_blank">View Cancelled</a>
+                        {% else %}
+                            <a href="{{ url_for('print_ticket_page', pnr=ticket.pnr) }}" class="button" target="_blank">View/Print</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {# --- Section 2: Unreserved Tickets --- #}
+    {% if unreserved_tickets %}
+        <h3 style="margin-top: 40px;">Unreserved Tickets</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Ticket ID</th>
+                    <th>Route</th>
+                    <th>Train Type</th>
+                    <th>Booking Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket_id, ticket in unreserved_tickets.items()|sort(attribute='1.booking_date', reverse=true) %}
+                <tr>
+                    <td>{{ ticket.ticket_id }}</td>
+                    <td>{{ ticket.source }} to {{ ticket.destination }}</td>
+                    <td>{{ ticket.train_type }}</td>
+                    <td>{{ ticket.booking_date }}</td>
+                    <td>
+                        <a href="{{ url_for('print_unreserved_ticket', ticket_id=ticket.ticket_id) }}" class="button" target="_blank">View/Print</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {# --- Section 3: Platform Tickets --- #}
+    {% if platform_tickets %}
+        <h3 style="margin-top: 40px;">Platform Tickets</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Ticket ID</th>
+                    <th>Station Name</th>
+                    <th>Persons</th>
+                    <th>Booking Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket_id, ticket in platform_tickets.items()|sort(attribute='1.booking_date', reverse=true) %}
+                <tr>
+                    <td>{{ ticket.ticket_id }}</td>
+                    <td>{{ ticket.station_name }}</td>
+                    <td>{{ ticket.num_persons }}</td>
+                    <td>{{ ticket.booking_date }}</td>
+                    <td>
+                        <a href="{{ url_for('print_platform_ticket', ticket_id=ticket.ticket_id) }}" class="button" target="_blank">View/Print</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {# --- Section 4: Monthly Season Tickets (MST) --- #}
+    {% if mst_tickets %}
+        <h3 style="margin-top: 40px;">Monthly Season Tickets (MST)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Ticket ID</th>
+                    <th>Passenger Name</th>
+                    <th>Route</th>
+                    <th>Valid Until</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket_id, ticket in mst_tickets.items()|sort(attribute='1.valid_from', reverse=true) %}
+                <tr>
+                    <td>{{ ticket.ticket_id }}</td>
+                    <td>{{ ticket.passenger_name }}</td>
+                    <td>{{ ticket.source }} to {{ ticket.destination }}</td>
+                    <td>{{ ticket.valid_until }}</td>
+                    <td>
+                        <a href="{{ url_for('view_mst_ticket', ticket_id=ticket.ticket_id) }}" class="button" target="_blank">View/Print</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {# Update the final 'no bookings' message #}
+    {% if not reserved_tickets and not unreserved_tickets and not platform_tickets and not mst_tickets %}
+        <p>You have not made any bookings yet.</p>
+    {% endif %}
+
+    {# This message is shown if no tickets of any kind have been booked. #}
+    {% if not reserved_tickets and not unreserved_tickets and not platform_tickets %}
+        <p>You have not made any bookings yet.</p>
+        <p>You can book a new ticket from the <a href="{{ url_for('landing_page') }}">home page</a>.</p>
+    {% endif %}
+
+{% endblock %}

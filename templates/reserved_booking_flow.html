@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Book Reserved Tickets{% endblock %}
+
+{% block content %}
+    <h1>Book Your Reserved Journey</h1>
+    <p>Find trains for your journey by entering the source and destination stations below.</p>
+    <hr style="margin: 20px 0;">
+
+    {# IMPORTANT: The form action now points to the new '/reserved_booking' route #}
+    <form action="{{ url_for('reserved_booking') }}" method="post">
+        <label for="source"><strong>From Station:</strong></label>
+        <input type="text" id="source" name="source" placeholder="e.g., Mumbai" required>
+
+        <label for="destination"><strong>To Station:</strong></label>
+        <input type="text" id="destination" name="destination" placeholder="e.g., New Delhi" required>
+
+        <button type="submit">Find Trains</button>
+    </form>
+{% endblock %}

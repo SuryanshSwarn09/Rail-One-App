@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}MST Details{% endblock %}
+{% block content %}
+    <h2>Monthly Season Ticket (MST)</h2>
+    <div class="ticket-details">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="https://upload.wikimedia.org/wikipedia/en/4/45/IRCTC_Logo.svg" alt="Railway Logo" style="width: 80px;">
+            <h2 style="margin-top: 10px; margin-bottom: 0;">भारतीय रेलवे</h2>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <p><strong>Ticket ID:</strong> {{ ticket.ticket_id }}</p>
+                <p><strong>Status:</strong> <span style="font-weight: bold; color: green">{{ ticket.status }}</span></p>
+            </div>
+            <div>
+                 <img src="{{ url_for('generate_qr_code', ticket_type='mst', ticket_id=ticket.ticket_id) }}" alt="Ticket QR Code" style="width: 100px; height: 100px;">
+            </div>
+        </div>
+        <hr>
+        <p><strong>Passenger Name:</strong> {{ ticket.passenger_name }}</p>
+        <p><strong>Age:</strong> {{ ticket.passenger_age }}</p>
+        <p><strong>Phone Number:</strong> {{ ticket.phone_number }}</p>
+        <p><strong>Route:</strong> {{ ticket.source }} to {{ ticket.destination }}</p>
+        <p><strong>Valid From:</strong> {{ ticket.valid_from }}</p>
+        <p><strong>Valid Until:</strong> {{ ticket.valid_until }}</p>
+        <p><strong>Fare:</strong> ₹{{ "%.2f"|format(ticket.total_fare) }}</p>
+        <hr>
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="{{ url_for('print_mst_ticket', ticket_id=ticket.ticket_id) }}" class="button" target="_blank">Print / Save as PDF</a>
+        </div>
+    </div>
+{% endblock %}

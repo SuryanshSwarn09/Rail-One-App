@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Book Platform Ticket{% endblock %}
+
+{% block content %}
+    <h2>Book a Platform Ticket</h2>
+    <p>Tickets are valid for 2 hours from the time of booking. Price: ₹10 per person.</p>
+    <hr style="margin: 20px 0;">
+
+    <form method="post">
+        <label for="station_name"><strong>Station Name:</strong></label>
+        <input type="text" id="station_name" name="station_name" placeholder="e.g., Patna Junction" required>
+
+        <label for="num_persons"><strong>Number of Persons:</strong></label>
+        <input type="number" id="num_persons" name="num_persons" min="1" placeholder="e.g., 2" required>
+
+        <button type="submit">Book Now (₹10/person)</button>
+    </form>
+{% endblock %}
