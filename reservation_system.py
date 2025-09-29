@@ -9,19 +9,18 @@ from werkzeug.security import generate_password_hash, check_password_hash
 class RailwayReservationSystem:
 
     def __init__(self, db_path='railway.db'):
-        """Initializes the system, including a detailed berth inventory."""
+        """Initializes the system by loading data and setting up the database."""
         self.db_path = db_path
         self._init_db()
         self.trains = self._load_trains_from_csv()
         self.booked_tickets = {}
         self.platform_tickets = {}
         self.unreserved_tickets = {}
+        self.mst_tickets = {}
         self.pending_tickets = {}
         self._station_coordinates = self._load_station_coordinates()
         self._station_codes = self._generate_station_codes()
-        # Generate a detailed inventory of every coach and berth
         self.berth_inventory = self._generate_berth_inventory()
-        self.mst_tickets = {}
 
     def _init_db(self):
         with sqlite3.connect(self.db_path) as conn:
@@ -35,50 +34,50 @@ class RailwayReservationSystem:
             ''')
             conn.commit()
 
-    def calculate_mst_fare(self, source_station, dest_station):
-        """ Calculates the fare for a Monthly Season Ticket (MST).
-    Simulated as 30 single journeys in Mail/Express."""
-        distance = self.get_distance(source_station, dest_station)
-        if not distance:
-            return None
-        single_journey_fare = distance * 0.36
-        monthly_fare = single_journey_fare * 30
-        return round(monthly_fare, 2)
-    
-
-
     def create_user(self, username, password):
-        password_hash = generate_password_hash(password)
+        """Creates a new user with a hashed password and improved error handling."""
         try:
+            password_hash = generate_password_hash(password)
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
                 cursor.execute("INSERT INTO users (username, password_hash) VALUES (?, ?)", (username, password_hash))
                 conn.commit()
             return True
         except sqlite3.IntegrityError:
+            # This is a specific error for when the username is already taken.
+            print(f"DATABASE ERROR: Attempted to create a user that already exists: {username}")
+            return False
+        except Exception as e:
+            # This will catch any other unexpected error during user creation.
+            print(f"UNEXPECTED ERROR in create_user: {e}")
             return False
 
     def check_user(self, username, password):
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute("SELECT password_hash FROM users WHERE username = ?", (username,))
-            user_record = cursor.fetchone()
-            if user_record and check_password_hash(user_record[0], password):
-                return True
-        return False
-
+        """Checks if a user exists and the password is correct."""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT password_hash FROM users WHERE username = ?", (username,))
+                user_record = cursor.fetchone()
+                if user_record and check_password_hash(user_record[0], password):
+                    return True
+            return False
+        except Exception as e:
+            print(f"UNEXPECTED ERROR in check_user: {e}")
+            return False
+            
+    # ... (The rest of your methods remain unchanged) ...
     def _generate_berth_inventory(self):
-        """Creates a simulated, detailed inventory of coaches and berths for each train."""
         inventory = {}
-        berth_types = ['LB', 'MB', 'UB', 'SLB', 'SUB'] # Lower, Middle, Upper, Side Lower, Side Upper
+        berth_types = ['LB', 'MB', 'UB', 'SLB', 'SUB']
         for train_no, train_data in self.trains.items():
             inventory[train_no] = {}
             for class_code, class_info in train_data['classes'].items():
                 inventory[train_no][class_code] = {}
-                seats_per_coach = 72 if class_code == 'SL' else 64 # Simplified assumption
+                seats_per_coach = 72 if class_code == 'SL' else 64
                 num_coaches = math.ceil(class_info['seats'] / seats_per_coach)
                 for i in range(1, num_coaches + 1):
-                    coach_name = f"{class_code.replace('A', '')}{i}" # e.g., S1, B1, A1
+                    coach_name = f"{class_code.replace('A', '')}{i}"
                     inventory[train_no][class_code][coach_name] = []
                     for seat_num in range(1, seats_per_coach + 1):
                         berth_info = {'number': seat_num, 'type': random.choice(berth_types)}
@@ -86,74 +85,53 @@ class RailwayReservationSystem:
         return inventory
 
     def allocate_berths(self, train_no, travel_class, passengers):
-        """Allocates specific berths to passengers based on age and preference."""
-        if train_no not in self.berth_inventory or travel_class not in self.berth_inventory[train_no]:
-            return None
+        if train_no not in self.berth_inventory or travel_class not in self.berth_inventory[train_no]: return None
         available_berths = self.berth_inventory[train_no][travel_class]
         updated_passengers = []
         seniors = [p for p in passengers if int(p.get('age', 0)) >= 60]
         others = [p for p in passengers if int(p.get('age', 0)) < 60]
-
-        # Allocate for Senior Citizens (priority for Lower Berths)
         for senior in seniors:
             allocated = False
             for coach, berths in available_berths.items():
                 for i, berth in enumerate(berths):
                     if berth['type'] == 'LB':
-                        senior['coach'] = coach
-                        senior['berth'] = f"{berth['number']}{berth['type']}"
+                        senior['coach'], senior['berth'] = coach, f"{berth['number']}{berth['type']}"
                         updated_passengers.append(senior)
                         del berths[i]
                         allocated = True
                         break
                 if allocated: break
-            if not allocated: return None # Failed to find a lower berth
-
-        # Allocate for Other Passengers
+            if not allocated: return None
         for passenger in others:
             allocated = False
             preference = passenger.get('preference')
-            # Try to find preferred berth
             for coach, berths in available_berths.items():
                 for i, berth in enumerate(berths):
                     if berth['type'] == preference:
-                        passenger['coach'] = coach
-                        passenger['berth'] = f"{berth['number']}{berth['type']}"
+                        passenger['coach'], passenger['berth'] = coach, f"{berth['number']}{berth['type']}"
                         updated_passengers.append(passenger)
                         del berths[i]
                         allocated = True
                         break
                 if allocated: break
-            # If preference not found, allocate any available berth
             if not allocated:
                 for coach, berths in available_berths.items():
                     if berths:
                         berth = berths.pop(0)
-                        passenger['coach'] = coach
-                        passenger['berth'] = f"{berth['number']}{berth['type']}"
+                        passenger['coach'], passenger['berth'] = coach, f"{berth['number']}{berth['type']}"
                         updated_passengers.append(passenger)
                         allocated = True
                         break
             if not allocated: return None
         return updated_passengers
         
-    def book_ticket_logic(self, pnr, train_no, travel_class, passengers):
-        """Handles booking by calling the new berth allocation logic."""
+    def book_ticket_logic(self, pnr, train_no, travel_class, passengers, quota):
         allocated_passengers = self.allocate_berths(train_no, travel_class, passengers)
-        if not allocated_passengers:
-            return None
+        if not allocated_passengers: return None
         train = self.trains.get(train_no)
         train_details = train['details']
         class_details = train['classes'].get(travel_class)
-        ticket_details = {
-            "pnr": pnr, "train_no": train_no, "train_name": train_details[0],
-            "source": train_details[1], "destination": train_details[2],
-            "departure": train_details[3], "arrival": train_details[4],
-            "travel_class": f"{travel_class} - {class_details['name']}",
-            "passengers": allocated_passengers,
-            "status": "CONFIRMED",
-            "booking_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
+        ticket_details = {"pnr": pnr, "train_no": train_no, "train_name": train_details[0], "source": train_details[1], "destination": train_details[2], "departure": train_details[3], "arrival": train_details[4], "travel_class": f"{travel_class} - {class_details['name']}", "passengers": allocated_passengers, "status": "CONFIRMED", "booking_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "quota": quota}
         self.booked_tickets[pnr] = ticket_details
         return ticket_details
 
@@ -161,13 +139,11 @@ class RailwayReservationSystem:
         fare_rates = {'1A': 4.5, '2A': 2.5, '3A': 1.8, 'SL': 0.8, 'EC': 2.2, 'CC': 1.5, '2S': 0.6}
         train = self.trains.get(train_no)
         if not train: return 0
-        source_name = train['details'][1].split('(')[0].strip()
-        dest_name = train['details'][2].split('(')[0].strip()
-        distance = self.get_distance(source_name, dest_name)
+        source_code, dest_code = train['details'][1], train['details'][2]
+        distance = self.get_distance(source_code, dest_code)
         rate = fare_rates.get(travel_class, 1.0)
         if not distance: return 0
-        total_fare = distance * rate * num_passengers
-        return round(total_fare, 2)
+        return round(distance * rate * num_passengers, 2)
 
     def _load_trains_from_csv(self):
         trains_data = {}
@@ -178,7 +154,7 @@ class RailwayReservationSystem:
                     train_no = row['train_no']
                     if train_no not in trains_data:
                         trains_data[train_no] = {'details': [row['train_name'], row['source'], row['destination'], row['departure'], row['arrival']], 'classes': {}}
-                    trains_data[train_no]['classes'][row['class_code']] = {'name': row['class_name'], 'seats': int(row['seats'])}
+                    trains_data[train_no]['classes'][row['class_code']] = {'name': row['class_name'], 'seats': int(row['seats']), 'tatkaal_seats': int(row.get('tatkaal_seats', 0))}
         except FileNotFoundError: return {}
         return trains_data
 
@@ -207,14 +183,11 @@ class RailwayReservationSystem:
             source_code = self._station_codes.get(source_station.lower())
             dest_code = self._station_codes.get(dest_station.lower())
             if not source_code or not dest_code: return None
-            source_coords = self._station_coordinates[source_code]
-            dest_coords = self._station_coordinates[dest_code]
-            lat1, lon1 = source_coords['lat'], source_coords['lon']
-            lat2, lon2 = dest_coords['lat'], dest_coords['lon']
+            source_coords, dest_coords = self._station_coordinates[source_code], self._station_coordinates[dest_code]
+            lat1, lon1, lat2, lon2 = source_coords['lat'], source_coords['lon'], dest_coords['lat'], dest_coords['lon']
             R = 6371
             lat1_rad, lat2_rad = math.radians(lat1), math.radians(lat2)
-            delta_lat = math.radians(lat2 - lat1)
-            delta_lon = math.radians(lon2 - lon1)
+            delta_lat, delta_lon = math.radians(lat2 - lat1), math.radians(lon2 - lon1)
             a = math.sin(delta_lat / 2)**2 + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(delta_lon / 2)**2
             c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
             return int(R * c)
@@ -226,6 +199,11 @@ class RailwayReservationSystem:
         rate = fares.get(train_type)
         if not rate: return 0
         return round((adults * rate['adult'] * distance) + (children * rate['child'] * distance), 2)
+
+    def calculate_mst_fare(self, source_station, dest_station):
+        distance = self.get_distance(source_station, dest_station)
+        if not distance: return None
+        return round(distance * 0.36 * 30, 2)
 
     def _generate_pnr(self):
         while True:
