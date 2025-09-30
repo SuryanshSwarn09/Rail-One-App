@@ -6,7 +6,26 @@
     <style>
         body { font-family: 'Courier New', monospace; text-align: center; }
         .controls { padding: 20px; border-bottom: 1px solid #ccc; }
-        .ticket-container { border: 2px dashed #333; padding: 20px; margin: 20px auto; width: 400px; text-align: left; }
+        
+        /* --- UPDATED & NEW STYLES --- */
+        .ticket-container { 
+            border: 2px dashed #333; 
+            padding: 20px; 
+            margin: 20px auto; 
+            width: 400px; 
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+        .watermark {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); z-index: 0;
+            width: 250px; height: 250px;
+            background-image: url("https://play-lh.googleusercontent.com/E-6l0O0rGrPRmLBI7yPvmhXg8pw_1NJ3gGBjrHs9dUDUGSaa0JKYiP-3Htbuw2B8Jp0=w480-h960-rw");
+            background-repeat: no-repeat; background-position: center;
+            background-size: contain; opacity: 0.6;
+        }
+        .ticket-content { position: relative; z-index: 1; }
         @media print { .controls { display: none !important; } }
     </style>
 </head>
@@ -15,24 +34,27 @@
         <button onclick="window.print()" style="padding: 10px 20px;">🖨️ Print Now</button>
     </div>
     <div class="ticket-container">
-        <div style="text-align: center; margin-bottom: 15px;">
-            <img src="https://upload.wikimedia.org/wikipedia/en/4/45/IRCTC_Logo.svg" alt="Railway Logo" style="width: 60px;">
-            <h3 style="margin: 5px 0 10px 0;">भारतीय रेलवे</h3>
-        </div>
-        <h2>UNRESERVED TICKET (UTS)</h2>
-        <p>------------------------------------------</p>
-        <p><strong>FROM:</strong> {{ ticket.source.upper() }}</p>
-        <p><strong>TO:</strong> {{ ticket.destination.upper() }}</p>
-        <p><strong>DISTANCE:</strong> {{ ticket.distance }} KM</p>
-        <p><strong>TYPE:</strong> {{ ticket.train_type }}</p>
-        <p>------------------------------------------</p>
-        <p><strong>ADULT:</strong> {{ ticket.adults }} | <strong>CHILD:</strong> {{ ticket.children }}</p>
-        <p><strong>TOTAL FARE:</strong> Rs. {{ "%.2f"|format(ticket.total_fare) }}</p>
-        <p>------------------------------------------</p>
-        <p><strong>TICKET ID:</strong> {{ ticket.ticket_id }}</p>
-        <p><strong>BOOKED:</strong> {{ ticket.booking_date }}</p>
-        <div style="text-align:center; margin-top:15px;">
-             <img src="{{ url_for('generate_qr_code', ticket_type='unreserved', ticket_id=ticket.ticket_id) }}" alt="Ticket QR Code" style="width: 120px; height: 120px;">
+        <div class="watermark"></div>
+        <div class="ticket-content">
+            <div style="text-align: center; margin-bottom: 15px;">
+                <img src="https://upload.wikimedia.org/wikipedia/en/4/45/IRCTC_Logo.svg" alt="Railway Logo" style="width: 60px;">
+                <h3 style="margin: 5px 0 10px 0;">भारतीय रेलवे</h3>
+            </div>
+            <h2>UNRESERVED TICKET (UTS)</h2>
+            <p>------------------------------------------</p>
+            <p><strong>FROM:</strong> {{ ticket.source.upper() }}</p>
+            <p><strong>TO:</strong> {{ ticket.destination.upper() }}</p>
+            <p><strong>DISTANCE:</strong> {{ ticket.distance }} KM</p>
+            <p><strong>TYPE:</strong> {{ ticket.train_type }}</p>
+            <p>------------------------------------------</p>
+            <p><strong>ADULT:</strong> {{ ticket.adults }} | <strong>CHILD:</strong> {{ ticket.children }}</p>
+            <p><strong>TOTAL FARE:</strong> Rs. {{ "%.2f"|format(ticket.total_fare) }}</p>
+            <p>------------------------------------------</p>
+            <p><strong>TICKET ID:</strong> {{ ticket.ticket_id }}</p>
+            <p><strong>BOOKED:</strong> {{ ticket.booking_date }}</p>
+            <div style="text-align:center; margin-top:15px;">
+                 <img src="{{ url_for('generate_qr_code', ticket_type='unreserved', ticket_id=ticket.ticket_id) }}" alt="Ticket QR Code" style="width: 120px; height: 120px;">
+            </div>
         </div>
     </div>
 </body>

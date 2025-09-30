@@ -7,7 +7,27 @@
         body { font-family: 'Courier New', monospace; text-align: center; }
         .controls { padding: 20px; border-bottom: 1px solid #ccc; }
         .print-button { padding: 10px 20px; cursor: pointer; }
-        .ticket-container { border: 2px dashed #333; padding: 20px; margin: 20px auto; width: 350px; text-align: left; }
+        
+        /* --- UPDATED & NEW STYLES --- */
+        .ticket-container { 
+            border: 2px dashed #333; 
+            padding: 20px; 
+            margin: 20px auto; 
+            width: 350px; 
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+        .watermark {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); z-index: 0;
+            width: 250px; height: 250px;
+            background-image: url("https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Indian_Railways_Logo_Red_Variant.svg/2048px-Indian_Railways_Logo_Red_Variant.svg.png");
+            background-repeat: no-repeat; background-position: center;
+            background-size: contain; opacity: 0.35;
+        }
+        .ticket-content { position: relative; z-index: 1; }
+
         h2, h3 { text-align: center; margin-top: 0; }
         p { margin: 10px 0; font-size: 14px; }
         @media print {
@@ -22,23 +42,26 @@
         <button onclick="window.print()" class="print-button">🖨️ Print Now</button>
     </div>
     <div class="ticket-container">
-        <div style="text-align: center; margin-bottom: 15px;">
-            <img src="https://upload.wikimedia.org/wikipedia/en/4/45/IRCTC_Logo.svg" alt="Railway Logo" style="width: 60px;">
-            <h3 style="margin: 5px 0 10px 0;">भारतीय रेलवे</h3>
+        <div class="watermark"></div>
+        <div class="ticket-content">
+            <div style="text-align: center; margin-bottom: 15px;">
+                <img src="https://upload.wikimedia.org/wikipedia/en/4/45/IRCTC_Logo.svg" alt="Railway Logo" style="width: 60px;">
+                <h3 style="margin: 5px 0 10px 0;">भारतीय रेलवे</h3>
+            </div>
+            <h2>PLATFORM TICKET</h2>
+            <p>----------------------------------------</p>
+            <p><strong>STATION:</strong> {{ ticket.station_name.upper() }}</p>
+            <p><strong>PERSONS:</strong> {{ ticket.num_persons }}</p>
+            <p><strong>PRICE:</strong> Rs. {{ "%.2f"|format(ticket.total_price) }}</p>
+            <p>----------------------------------------</p>
+            <p><strong>TICKET ID:</strong> {{ ticket.ticket_id }}</p>
+            <p><strong>BOOKED ON:</strong> {{ ticket.booking_date }}</p>
+            <p>----------------------------------------</p>
+            <div style="text-align:center; margin-top:10px;">
+                 <img src="{{ url_for('generate_qr_code', ticket_type='platform', ticket_id=ticket.ticket_id) }}" alt="Ticket QR Code" style="width: 120px; height: 120px;">
+            </div>
+            <p style="text-align:center;">VALID FOR 2 HOURS.</p>
         </div>
-        <h2>PLATFORM TICKET</h2>
-        <p>----------------------------------------</p>
-        <p><strong>STATION:</strong> {{ ticket.station_name.upper() }}</p>
-        <p><strong>PERSONS:</strong> {{ ticket.num_persons }}</p>
-        <p><strong>PRICE:</strong> Rs. {{ "%.2f"|format(ticket.total_price) }}</p>
-        <p>----------------------------------------</p>
-        <p><strong>TICKET ID:</strong> {{ ticket.ticket_id }}</p>
-        <p><strong>BOOKED ON:</strong> {{ ticket.booking_date }}</p>
-        <p>----------------------------------------</p>
-        <div style="text-align:center; margin-top:10px;">
-             <img src="{{ url_for('generate_qr_code', ticket_type='platform', ticket_id=ticket.ticket_id) }}" alt="Ticket QR Code" style="width: 120px; height: 120px;">
-        </div>
-        <p style="text-align:center;">VALID FOR 2 HOURS.</p>
     </div>
 </body>
 </html>
