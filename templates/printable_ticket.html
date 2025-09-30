@@ -7,12 +7,48 @@
         body { font-family: 'Helvetica', 'Arial', sans-serif; text-align: center; background-color: #f0f0f0; }
         .controls { padding: 20px; background-color: #fff; border-bottom: 2px solid #ddd; }
         .print-button { padding: 12px 25px; font-size: 16px; cursor: pointer; background-color: #007BFF; color: white; border: none; border-radius: 5px; }
-        .ticket-container { background-color: white; border: 2px solid #333; padding: 25px; margin: 20px auto; width: 80%; max-width: 700px; text-align: left; position: relative; }
+        
+        /* --- UPDATED: Container now acts as a positioning anchor --- */
+        .ticket-container { 
+            background-color: white; 
+            border: 2px solid #333; 
+            padding: 25px; 
+            margin: 20px auto; 
+            width: 80%; 
+            max-width: 700px; 
+            text-align: left; 
+            position: relative; /* This is crucial for the watermark */
+            overflow: hidden;   /* Keeps watermark contained */
+        }
+
+        /* --- NEW: Watermark styles --- */
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0; /* Places it behind the content */
+            width: 300px; /* Adjust size as needed */
+            height: 300px; /* Adjust size as needed */
+            background-image: url("https://upload.wikimedia.org/wikipedia/en/thumb/8/83/Indian_Railways.svg/1200px-Indian_Railways.svg.png");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            opacity: 0.35; /* 50% transparency */
+        }
+        
+        /* --- NEW: Content wrapper to place text above watermark --- */
+        .ticket-content {
+            position: relative;
+            z-index: 1; /* Ensures content is in front */
+        }
+
         h1, h2, h3 { text-align: center; color: #000; margin-top: 0; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ccc; padding: 10px; }
         th { background-color: #f2f2f2; }
         .qr-code { position: absolute; top: 25px; right: 25px; }
+        
         @media print {
             body { background-color: #fff; }
             .controls { display: none !important; }
@@ -21,52 +57,61 @@
     </style>
 </head>
 <body>
+
     <div class="controls">
         <p>Your browser's print dialog will open. Choose <strong>"Save as PDF"</strong> as the destination to download the ticket.</p>
         <button onclick="window.print()" class="print-button">🖨️ Print Now</button>
     </div>
+
     <div class="ticket-container">
-        <div style="text-align: center; margin-bottom: 20px;">
-            <img src="https://upload.wikimedia.org/wikipedia/en/4/45/IRCTC_Logo.svg" alt="Railway Logo" style="width: 80px;">
-            <h2 style="margin-top: 10px; margin-bottom: 0;">भारतीय रेलवे</h2>
-        </div>
-        <h1>Indian Railway E-Ticket</h1>
-        <div class="qr-code">
-            <img src="{{ url_for('generate_qr_code', ticket_type='reserved', ticket_id=ticket.pnr) }}" alt="Ticket QR Code" style="width: 90px; height: 90px;">
-        </div>
-        <p><strong>PNR:</strong> {{ ticket.pnr }}</p>
-        <p><strong>Status:</strong> {{ ticket.status }}</p>
-        <hr>
-        <p><strong>Train:</strong> {{ ticket.train_no }} - {{ ticket.train_name }}</p>
-        <p><strong>From:</strong> {{ ticket.source }}</p>
-        <p><strong>To:</strong> {{ ticket.destination }}</p>
-        <p><strong>Class:</strong> {{ ticket.travel_class }}</p>
-        <hr>
-        <h3>Passenger Details</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>S.No</th>
-                    <th>Name</th>
-                    <th>Age</th>
-                    <th>Gender</th>
-                    <th>Coach</th>
-                    <th>Berth</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for passenger in ticket.passengers %}
-                <tr>
-                    <td>{{ loop.index }}</td>
-                    <td>{{ passenger.name }}</td>
-                    <td>{{ passenger.age }}</td>
-                    <td>{{ passenger.gender }}</td>
-                    <td><strong>{{ passenger.coach }}</strong></td>
-                    <td><strong>{{ passenger.berth }}</strong></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+        
+        <div class="watermark"></div>
+
+        <div class="ticket-content">
+            
+            <div style="text-align: center; margin-bottom: 20px;">
+                <img src="https://upload.wikimedia.org/wikipedia/en/4/45/IRCTC_Logo.svg" alt="Railway Logo" style="width: 80px;">
+                <h2 style="margin-top: 10px; margin-bottom: 0;">भारतीय रेलवे</h2>
+            </div>
+
+            <h1>Indian Railway E-Ticket</h1>
+            <div class="qr-code">
+                <img src="{{ url_for('generate_qr_code', ticket_type='reserved', ticket_id=ticket.pnr) }}" alt="Ticket QR Code" style="width: 90px; height: 90px;">
+            </div>
+            <p><strong>PNR:</strong> {{ ticket.pnr }}</p>
+            <p><strong>Status:</strong> {{ ticket.status }}</p>
+            <hr>
+            <p><strong>Train:</strong> {{ ticket.train_no }} - {{ ticket.train_name }}</p>
+            <p><strong>From:</strong> {{ ticket.source }}</p>
+            <p><strong>To:</strong> {{ ticket.destination }}</p>
+            <p><strong>Class:</strong> {{ ticket.travel_class }}</p>
+            <hr>
+            <h3>Passenger Details</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>S.No</th>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>Coach</th>
+                        <th>Berth</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for passenger in ticket.passengers %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ passenger.name }}</td>
+                        <td>{{ passenger.age }}</td>
+                        <td>{{ passenger.gender }}</td>
+                        <td><strong>{{ passenger.coach }}</strong></td>
+                        <td><strong>{{ passenger.berth }}</strong></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div> </div>
+
 </body>
 </html>
