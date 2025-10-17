@@ -1,6 +1,20 @@
+# Flask and Web Server
 Flask
-qrcode[pil]
-werkzeug
-google-auth-oauthlib
-requests
+gunicorn
+
+# Google OAuth and Authentication
 flask-login
+google-auth-oauthlib
+google-api-python-client
+google-auth-httplib2
+
+# Environment Variables
+python-dotenv
+
+# QR Code Generation
+qrcode
+Pillow
+
+# Database (For future Postgres connection)
+SQLAlchemy
+psycopg2-binary
