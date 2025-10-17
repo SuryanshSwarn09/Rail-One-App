@@ -12,33 +12,42 @@
         label { display: block; margin-bottom: 5px; color: #555; }
         input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         button { width: 100%; padding: 12px; background-color: #0423aa; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        button:hover { background-color: #0423aa; }
+        button:hover { background-color: #038f5a; } /* Updated hover color */
         .flash { padding: 15px; margin-bottom: 20px; border-radius: 4px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; text-align: center; }
         .signup-link { text-align: center; margin-top: 20px; }
-
-
-        .top-left-logo {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 50px;
+        .top-left-logo { position: absolute; top: 20px; left: 20px; width: 50px; }
+        .header-image { width: 120px; margin-bottom: 20px; }
+        
+        /* --- NEW STYLES --- */
+        .divider { display: flex; align-items: center; text-align: center; color: #888; margin: 25px 0; }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #ccc; }
+        .divider:not(:empty)::before { margin-right: .25em; }
+        .divider:not(:empty)::after { margin-left: .25em; }
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 10px;
+            background-color: #fff;
+            color: #757575;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            box-sizing: border-box; /* Ensures padding doesn't affect width */
+            transition: background-color 0.3s, box-shadow 0.3s;
         }
-        .header-image {
-            width: 120px;
-            margin-bottom: 20px;
-        }
+        .google-btn:hover { background-color: #f5f5f5; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .google-btn img { margin-right: 12px; width: 20px; height: 20px; }
     </style>
 </head>
 <body>
-
     <img src="https://upload.wikimedia.org/wikipedia/en/4/45/IRCTC_Logo.svg" alt="Railway Logo" class="top-left-logo">
-
     <div class="login-container">
-        
         <img src="https://upload.wikimedia.org/wikipedia/en/4/45/IRCTC_Logo.svg" alt="Train Icon" class="header-image">
-
         <h1>Rail One</h1>
-
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -58,6 +67,14 @@
             </div>
             <button type="submit">Login</button>
         </form>
+
+        <div class="divider">OR</div>
+
+        <a href="{{ url_for('google_login') }}" class="google-btn">
+            <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo">
+            Sign in with Google
+        </a>
+
         <div class="signup-link">
             <p>Don't have an account? <a href="{{ url_for('signup') }}">Sign up here</a></p>
         </div>

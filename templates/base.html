@@ -94,7 +94,8 @@
         <img src="https://upload.wikimedia.org/wikipedia/en/4/45/IRCTC_Logo.svg" alt="Railway Logo" class="top-left-logo">
     </a>
 
-    {% if session.username %}
+    {# --- UPDATED THIS CONDITION --- #}
+    {% if current_user.is_authenticated %}
     <nav class="navbar">
         <a href="{{ url_for('reserved_booking') }}">Reserved TKT</a>
         <a href="{{ url_for('show_trains') }}">Train Schedule</a>

@@ -4,6 +4,87 @@
 
 {% block content %}
     <style>
+        .upcoming-journey-card {
+            background: #74729c;
+            background: linear-gradient(-225deg, #946a96 0%, #1f6a96 100%);
+            color: white;
+            border-radius: 35px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            max-width: 650px; /* Sets a maximum width */
+            margin: 0 auto 30px auto;
+        }
+        .upcoming-journey-card::before {
+            content: 'Upcoming journey';
+            position: absolute;
+            top: 25px;
+            left: 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+            opacity: 0.8;
+        }
+        .upcoming-journey-card .main-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+        .upcoming-journey-card .station-code {
+            font-size: 3.5em;
+            font-weight: bold;
+            line-height: 1;
+        }
+        .upcoming-journey-card .station-name {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .upcoming-journey-card .journey-date-time {
+            font-size: 1.2em;
+            font-weight: bold;
+            opacity: 0.9;
+        }
+        .upcoming-journey-card .arrow {
+            font-size: 2em;
+            margin: 0 15px;
+            opacity: 0.7;
+        }
+        .upcoming-journey-card .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px 20px;
+            font-size: 0.95em;
+            border-top: 1px dashed rgba(255, 255, 255, 0.5);
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+        .upcoming-journey-card .detail-item strong {
+            display: block;
+            font-size: 1.1em;
+        }
+        .upcoming-journey-card .detail-item span {
+            opacity: 0.8;
+        }
+        .upcoming-journey-card .running-status-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+            transition: background-color 0.2s;
+            font-weight: bold;
+        }
+        .upcoming-journey-card .running-status-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Existing styles ... */
         .welcome-header {
             text-align: left;
             margin-bottom: 40px;
@@ -73,9 +154,34 @@
     </style>
 
     <div class="welcome-header">
-        <p>Hi, {{ username.title() }}!</p>
-        <h2>भारतीय रेलवे, राष्ट्र की जीवन रेखा</h2>
+        <p>Hi, {{ current_user.username.title() }}!</p>
+        <h2>भारतीय रेल, राष्ट्र की जीवन रेखा</h2>
     </div>
+
+    {# --- UPCOMING JOURNEY CARD --- #}
+    {% if upcoming_ticket %}
+    <div class="upcoming-journey-card">
+        <div class="main-info">
+            <div>
+                <div class="station-code">{{ upcoming_ticket.source }}</div>
+                <div class="journey-date-time">{{ upcoming_ticket.journey_date }} / {{ upcoming_ticket.departure_time }}</div>
+            </div>
+            <div class="arrow">∙∙∙∙∙∙🚉∙∙∙∙∙∙</div>
+            <div>
+                <div class="station-code">{{ upcoming_ticket.destination }}</div>
+            </div>
+        </div>
+        <div class="details-grid">
+            <div class="detail-item"><span>PNR</span><strong>{{ upcoming_ticket.pnr }}</strong></div>
+            <div class="detail-item"><span>Train</span><strong>{{ upcoming_ticket.train_no }}</strong></div>
+            <div class="detail-item"><span>Coach</span><strong>{{ upcoming_ticket.coach }}</strong></div>
+            <div class="detail-item"><span>Seat/Berth</span><strong>{{ upcoming_ticket.berth }}</strong></div>
+            <div class="detail-item"><span>Passengers</span><strong>{{ upcoming_ticket.num_passengers }}</strong></div>
+            {# Add more details if needed, e.g., "Passenger 1" as shown in your image #}
+        </div>
+        <a href="{{ url_for('view_ticket', pnr=upcoming_ticket.pnr) }}" class="running-status-btn">View Ticket</a>
+    </div>
+    {% endif %}
 
     <div class="journey-planner">
         <a href="{{ url_for('reserved_booking') }}" class="card">

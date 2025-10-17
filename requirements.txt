@@ -1,3 +1,6 @@
 Flask
 qrcode[pil]
 werkzeug
+google-auth-oauthlib
+requests
+flask-login
